@@ -13,6 +13,7 @@ class DBHelper(context: Context, factory: SQLiteDatabase.CursorFactory?) :
         /*
         Create a database.
         Then create a table with columns and define column data types
+        This method will call if database file didn't exist
          */
         val query = ("CREATE TABLE " + TABLE_NAME + " ("
                 + BRAND + " TEXT, " +
@@ -22,7 +23,8 @@ class DBHelper(context: Context, factory: SQLiteDatabase.CursorFactory?) :
     }
 
     override fun onUpgrade(garagedb: SQLiteDatabase, p1: Int, p2: Int) {
-        // Check if table already created
+        // Check if table already created for database version
+        // If not this will drop the table then call onCreate()
         garagedb.execSQL("DROP TABLE IF EXISTS " + TABLE_NAME)
         onCreate(garagedb)
     }
@@ -49,7 +51,7 @@ class DBHelper(context: Context, factory: SQLiteDatabase.CursorFactory?) :
         // Crete a readable variable to read data in database
         val garagedb = this.readableDatabase
 
-        return garagedb.rawQuery("SELECT price FROM $TABLE_NAME WHERE BRAND = '$brand' AND $MODEL = '$model'", null)
+        return garagedb.rawQuery("SELECT price FROM $TABLE_NAME WHERE $BRAND = '$brand' AND $MODEL = '$model'", null)
 
     }
 
